@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.*;
 
-
 @Component
 public class GoogleAuth2SuccessHandler implements AuthenticationSuccessHandler {
     @Autowired
@@ -29,13 +28,15 @@ public class GoogleAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+            Authentication authentication) throws IOException, ServletException {
         OAuth2AuthenticationToken token = (OAuth2AuthenticationToken) authentication;
         String email = token.getPrincipal().getAttributes().get("email").toString();
         if (userRepository.findByEmail(email).isEmpty()) {
             User temp = new User();
             temp.setEmail(email);
-            temp.setUserName(token.getPrincipal().getAttributes().get("given_name").toString() + " " + token.getPrincipal().getAttributes().get("family_name").toString());
+            temp.setUserName(token.getPrincipal().getAttributes().get("given_name").toString() + " "
+                    + token.getPrincipal().getAttributes().get("family_name").toString());
             Set<Role> list = new HashSet<>();
             Optional<Role> a = roleRepository.findById(TbConstants.Roles.USER);
             if (a.isPresent()) {
